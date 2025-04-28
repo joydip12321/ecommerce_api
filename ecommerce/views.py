@@ -22,8 +22,7 @@ class RegisterView(generics.CreateAPIView):
     def perform_create(self, serializer):
         user = serializer.save()
         if user.role == 'vendor':
-            Vendor.objects.create(user=user, store_name="Your Store Name")  # Replace with real store_name if needed
-
+            Vendor.objects.create(user=user, store_name="Your Store Name")  
 
 class LoginView(generics.GenericAPIView):
     permission_classes = [AllowAny]
@@ -77,24 +76,18 @@ class VendorViewSet(viewsets.ModelViewSet):
 
 class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticated]  # Ensure only authenticated users can access
+    permission_classes = [IsAuthenticated]  
 
     def get_permissions(self):
-        """
-        Only vendors and admins can create, update, or delete products.
-        Admins can view all products.
-        Vendors can only manage their own products.
-        """
+
         if self.action in ['create', 'update', 'destroy']:
-            permission_classes = [IsVendor | IsAdmin]  # Vendor and Admin can modify products
+            permission_classes = [IsVendor | IsAdmin]  
         else:
-            permission_classes = [IsAuthenticated]  # All authenticated users can view products
+            permission_classes = [IsAuthenticated] 
         return [permission() for permission in permission_classes]
 
     def perform_create(self, serializer):
-        """
-        Vendors can only create products related to their store.
-        """
+
         if self.request.user.role == 'vendor':
             serializer.save(vendor=self.request.user.vendor_profile)
 
@@ -104,12 +97,10 @@ class ProductViewSet(viewsets.ModelViewSet):
             if hasattr(user, 'vendor_profile'):
                 return Product.objects.filter(vendor=user.vendor_profile)
             else:
-                # Vendor role, but vendor profile missing => return empty
                 return Product.objects.none()
         elif user.role == 'admin':
             return Product.objects.all()
         else:
-            # Customer can view all products
             return Product.objects.all()
 
 
@@ -118,19 +109,33 @@ class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
 
     def get_permissions(self):
-        if self.action in ['create']:
+        if self.action == 'create':
             permission_classes = [IsCustomer]
         else:
-            permission_classes = [IsVendor | IsCustomer]
+            permission_classes = [IsVendor | IsAdmin] 
         return [permission() for permission in permission_classes]
 
     def perform_create(self, serializer):
         serializer.save(customer=self.request.user)
 
     def get_queryset(self):
-        if self.request.user.role == 'customer':
-            return Order.objects.filter(customer=self.request.user)
-        elif self.request.user.role == 'vendor':
-            return Order.objects.filter(order_items__product__vendor=self.request.user.vendor)
+        user = self.request.user
+
+        if user.role == 'customer':
+            return Order.objects.filter(customer=user)
+
+        if user.role == 'vendor':
+
+            if hasattr(user, 'vendor_profile'):
+                return Order.objects.filter(
+                    order_items__product__vendor=user.vendor_profile
+                ).distinct()
+            else:
+                return Order.objects.none()
+
+        if user.role == 'admin':
+            return Order.objects.all()
+
         return Order.objects.none()
+
 

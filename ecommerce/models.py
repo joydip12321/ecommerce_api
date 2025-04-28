@@ -22,7 +22,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)  # Admins can access the admin panel
+    is_staff = models.BooleanField(default=False)  
     role = models.CharField(max_length=20, choices=[('admin', 'Admin'), ('vendor', 'Vendor'), ('customer', 'Customer')])
     objects = CustomUserManager()
 

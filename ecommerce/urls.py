@@ -4,7 +4,6 @@ from .views import*
 
 router = DefaultRouter()
 
-# Explicitly specify the basename for each viewset
 router.register(r'vendors', VendorViewSet, basename='vendor')
 router.register(r'products', ProductViewSet, basename='product')
 router.register(r'orders', OrderViewSet, basename='order')

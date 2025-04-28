@@ -23,7 +23,7 @@ class VendorSerializer(serializers.ModelSerializer):
         fields = ['id', 'store_name', 'user']
 
 class ProductSerializer(serializers.ModelSerializer):
-    vendor = VendorSerializer(read_only=True)  # 👈 put outside Meta
+    vendor = VendorSerializer(read_only=True) 
 
     class Meta:
         model = Product
@@ -37,7 +37,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     order_items = OrderItemSerializer(many=True)
-
+    customer=UserSerializer(read_only=True) 
     class Meta:
         model = Order
         fields = ['id', 'customer', 'status', 'order_items']
