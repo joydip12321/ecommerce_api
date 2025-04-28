@@ -1,0 +1,56 @@
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+migrations
+*.db
+*.sqlite3
+*.log
+*.pot
+*.pyc
+*.pyo
+*.db
+*.sqlite3
+*.log
+
+*/migrations/*
+
+
+
+# Django stuff:
+*.log
+*.pot
+*.pyc
+*.pyo
+__pycache__/
+migrations
+
+
+# Virtualenv
+venv/
+.env/
+
+
+
+# Static files
+static/
+staticfiles/
+
+# Media files
+media/
+
+# .env file for storing secret keys (add this file for security)
+.env
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*~
+
+# MySQL
+*.mysql
+
+# Backup files
+*~
